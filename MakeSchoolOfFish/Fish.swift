@@ -66,19 +66,41 @@ class Fish: SKSpriteNode {
     // 通過模仿魚類附近創建一個“蜂群思維”
     func calculateAlignment() -> CGPoint {
         // TODO: Implement this!
-        return CGPoint(x: 0, y: 0)
+        let 模仿群眾向量s = delegate.fishVelocities(within: alignmentVisibleDistance, of: self)
+        let 模仿的向量 = average(of: 模仿群眾向量s)
+        
+        return 模仿的向量/alignmentWeight
     }
     
     // Head towards food (single tap) 實現糧食
     func calculateFood() -> CGPoint {
         // TODO: Implement this!
-        return CGPoint(x: 0, y: 0)
+        let 食物位置:CGPoint? = delegate.foodLocation()
+        
+        if 食物位置 != nil {
+            let 食物距離 = self.position.distanceTo(食物位置!)
+            
+            if 食物距離 < foodVisibleDistance {
+                return vectorTo(point: 食物位置!)/foodWeight
+            }
+        }
+        
+        return CGPoint.zero
     }
     
     // Scatter away from ripples (double tap) 漣漪散遠
     func calculateRipple() -> CGPoint {
         // TODO: Implement this!
-        return CGPoint(x: 0, y: 0)
+        let 漣漪位置:CGPoint? = delegate.rippleLocation()
+        
+        if 漣漪位置 != nil {
+            let 漣漪距離 = self.position.distanceTo(漣漪位置!)
+            if 漣漪距離 < rippleVisibleDistance {
+                return vectorTo(point: 漣漪位置!)*(-1)/rippleWeight
+            }
+        }
+        
+        return CGPoint.zero
     }
     
     func updateVelocity() {
@@ -92,6 +114,7 @@ class Fish: SKSpriteNode {
         velocity = sum(of: [velocity, cohesion, seperation, alignment, food, ripple])
         clampVelocity()
     }
+    
     
     func vectorToCenterPoint(of points: [CGPoint]) -> CGPoint {
         // TODO: Implement this!
